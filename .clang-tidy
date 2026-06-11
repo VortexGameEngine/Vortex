@@ -1,0 +1,93 @@
+# .clang-tidy
+Checks: >
+  readability-identifier-naming,
+  modernize-*,
+  -modernize-use-trailing-return-type,
+  performance-*,
+  bugprone-*,
+  clang-analyzer-*,
+  cppcoreguidelines-*
+
+WarningsAsErrors: ''   # You can set this to '*' to make CI fail on warnings.
+
+HeaderFilterRegex: '^(?!.*[/\\]ThirdParty[/\\]).'
+
+CheckOptions:
+  # ----- Naming conventions -----
+
+  # Namespaces: lower_case or snake_case
+  - key: readability-identifier-naming.NamespaceCase
+    value: lower_case
+
+  # Classes / structs / enums: PascalCase
+  - key: readability-identifier-naming.ClassCase
+    value: CamelCase
+  - key: readability-identifier-naming.StructCase
+    value: CamelCase
+  - key: readability-identifier-naming.EnumCase
+    value: CamelCase
+  - key: readability-identifier-naming.EnumConstantCase
+    value: UPPER_CASE
+
+  # Typedefs / using aliases: PascalCase (common in engine-style type aliases)
+  - key: readability-identifier-naming.TypeAliasCase
+    value: CamelCase
+
+  # Public / normal methods (non-ctors): snake_case
+  - key: readability-identifier-naming.MethodCase
+    value: lower_case
+
+  # Free functions: snake_case
+  - key: readability-identifier-naming.FunctionCase
+    value: lower_case
+
+  # Function-like macros (we generally discourage them but keep ALL_CAPS if they exist)
+  - key: readability-identifier-naming.MacroDefinitionCase
+    value: UPPER_CASE
+
+  # Variables: snake_case
+  - key: readability-identifier-naming.VariableCase
+    value: lower_case
+
+  # Member variables: snake_case with trailing underscore
+  - key: readability-identifier-naming.MemberCase
+    value: lower_case
+  - key: readability-identifier-naming.PrivateMemberSuffix
+    value: _
+
+  # Static data members: snake_case with s_ prefix (optional)
+  # If you want this, uncomment the next two lines.
+  # - key: readability-identifier-naming.ClassMemberPrefix
+  #   value: s_
+  # - key: readability-identifier-naming.ClassMemberCase
+  #   value: lower_case
+
+  # Global variables: g_ prefix (optional but common). Comment out to disable.
+  - key: readability-identifier-naming.GlobalConstantCase
+    value: UPPER_CASE
+  - key: readability-identifier-naming.GlobalVariablePrefix
+    value: g_
+  - key: readability-identifier-naming.GlobalVariableCase
+    value: lower_case
+
+  # Parameters: snake_case
+  - key: readability-identifier-naming.ParameterCase
+    value: lower_case
+
+  # Local variables: snake_case
+  - key: readability-identifier-naming.LocalVariableCase
+    value: lower_case
+
+  # Constants / constexpr / const globals: ALL_CAPS
+  - key: readability-identifier-naming.ConstantCase
+    value: UPPER_CASE
+
+  # Files: snake_case
+  - key: readability-identifier-naming.FileCase
+    value: CamelCase
+
+  # ----- Misc behaviour -----
+
+  # Accept leading underscores in generated / platform symbols without warning
+  - key: readability-identifier-naming.IgnoreMainLikeFunctions
+    value: '1'

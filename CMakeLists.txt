@@ -15,11 +15,38 @@
 cmake_minimum_required(VERSION 3.28)
 project(VortexEngine)
 
+option(ENABLE_CLANG_TIDY "Run clang-tidy during build" ON)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+if (ENABLE_CLANG_TIDY)
+    find_program(CLANG_TIDY_EXE NAMES clang-tidy)
+    if (CLANG_TIDY_EXE)
+        message(STATUS "clang-tidy found: ${CLANG_TIDY_EXE}")
+        if(MSVC)
+            set(CMAKE_CXX_CLANG_TIDY "${CLANG_TIDY_EXE};-p=${CMAKE_BINARY_DIR};-warnings-as-errors=*;--extra-arg=/EHsc")
+        else()
+            set(CMAKE_CXX_CLANG_TIDY "${CLANG_TIDY_EXE};-p=${CMAKE_BINARY_DIR};-warnings-as-errors=*")
+        endif()
+    else()
+        message(WARNING "clang-tidy not found!")
+    endif()
+endif()
+
+if(MSVC)
+    add_compile_options("/EHsc")
+endif()
+
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(VORTEX_ENGINE_DYNAMIC_LINK ON)
 
+include(ThirdParty/yaml-cpp.cmake)
 include(cmake/Vortex.cmake)
 include_directories(VortexEngine)
+include_directories(ThirdParty)
+
+# Add vbuild project
+add_subdirectory(tools/vbuild)
 
 ###########################################
 # Add Vortex modules here

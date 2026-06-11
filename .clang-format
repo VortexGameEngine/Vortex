@@ -1,0 +1,33 @@
+# .clang-format
+BasedOnStyle: Google
+
+# General layout preferences
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+
+ColumnLimit: 120
+
+# Control brace style: Attach = K&R style, Allman = newline braces.
+# Defaulted to Allman here as it's common in engines.
+BreakBeforeBraces: Allman
+
+# Namespace indentation
+NamespaceIndentation: All
+
+# Align consecutive assignments, etc. for readability in engine code
+AlignConsecutiveAssignments: Consecutive
+AlignConsecutiveDeclarations: Consecutive
+
+# Pointer/reference alignment style:
+DerivePointerAlignment: false
+PointerAlignment: Left   # "int* ptr" instead of "int *ptr"
+
+# Sort includes? Often nice in open source
+SortIncludes: true
+
+# Don't cram everything into one line just because it fits
+AllowShortFunctionsOnASingleLine: Empty   # only {} allowed inline
+
+# Extra tweak: don't split long template names aggressively unless needed
+AlwaysBreakTemplateDeclarations: Yes
