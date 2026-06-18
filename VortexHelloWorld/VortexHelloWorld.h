@@ -16,4 +16,4 @@
 
 #include "../VortexEngine/VortexEngine.h"
 
-void VE_EXPORT PrintHelloWorld();
+void VE_EXPORT print_hello_world();

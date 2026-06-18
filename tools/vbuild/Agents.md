@@ -12,7 +12,6 @@ definitions based on declarative YAML manifests.
 ---
 
 ## Responsibilities
-
 - Parse project manifest **vortex.yaml**
 - Parse each module’s **vortex_module.yaml**
 - Resolve:

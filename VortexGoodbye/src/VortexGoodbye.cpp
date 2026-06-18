@@ -16,6 +16,6 @@
 
 #include <iostream>
 
-void VE_EXPORT PrintGoodbye() {
-    std::cout << "Goodbye!" << std::endl;
+void print_goodbye() {
+    std::cout << "Goodbye!\n";
 }

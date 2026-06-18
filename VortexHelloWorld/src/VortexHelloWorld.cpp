@@ -16,6 +16,6 @@
 
 #include <iostream>
 
-void VE_EXPORT PrintHelloWorld() {
-    std::cout << "Hello world" << std::endl;
+void VE_EXPORT print_hello_world() {
+    std::cout << "Hello world\n";
 }

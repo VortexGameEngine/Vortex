@@ -15,11 +15,19 @@
 #pragma once
 #include "PlatformMacros.h"
 
+#if defined(VE_PLATFORM_WINDOWS)
+    #define VE_DLL_EXPORT __declspec(dllexport)
+    #define VE_DLL_IMPORT extern __declspec(dllimport)
+#else
+    #define VE_DLL_EXPORT
+    #define VE_DLL_IMPORT
+#endif
+
 #if defined(VE_PLATFORM_WINDOWS) && defined(VE_LK_DYNAMIC)
     #ifdef VE_COMPILE_VORTEX
-        #define VE_EXPORT __declspec(dllexport)
+        #define VE_EXPORT VE_DLL_EXPORT
     #else
-        #define VE_EXPORT extern __declspec(dllimport)
+        #define VE_EXPORT VE_DLL_IMPORT
     #endif
 #else
     #define VE_EXPORT

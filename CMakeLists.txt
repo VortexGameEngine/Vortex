@@ -18,6 +18,17 @@ project(VortexEngine)
 option(ENABLE_CLANG_TIDY "Run clang-tidy during build" ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+if(MSVC)
+    add_compile_options("/EHsc")
+endif()
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(VORTEX_ENGINE_DYNAMIC_LINK ON)
+
+include(ThirdParty/yaml-cpp.cmake)
+
+# Set after FetchContent so third-party targets defined above don't inherit it
 if (ENABLE_CLANG_TIDY)
     find_program(CLANG_TIDY_EXE NAMES clang-tidy)
     if (CLANG_TIDY_EXE)
@@ -31,16 +42,6 @@ if (ENABLE_CLANG_TIDY)
         message(WARNING "clang-tidy not found!")
     endif()
 endif()
-
-if(MSVC)
-    add_compile_options("/EHsc")
-endif()
-
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(VORTEX_ENGINE_DYNAMIC_LINK ON)
-
-include(ThirdParty/yaml-cpp.cmake)
 include(cmake/Vortex.cmake)
 include_directories(VortexEngine)
 include_directories(ThirdParty)

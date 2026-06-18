@@ -1,5 +1,6 @@
 include_directories(.)
 add_executable(vbuild src/main.cpp)
+target_link_libraries(vbuild PUBLIC yaml-cpp::yaml-cpp)
 
 if(WIN32 AND MINGW)
     get_filename_component(MINGW_BIN_DIR ${CMAKE_CXX_COMPILER} DIRECTORY)

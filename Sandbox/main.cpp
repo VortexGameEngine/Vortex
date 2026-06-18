@@ -16,10 +16,11 @@
 #include <../VortexHelloWorld/VortexHelloWorld.h>
 #include <../VortexGoodbye/VortexGoodbye.h>
 
-int main(int argc, char *argv[]) {
-    PrintHelloWorld();
-    DoSomething();
+auto main(int argc, char *argv[]) -> int {
+    print_hello_world();
+    do_something();
 #ifdef VE_MODULE_VORTEX_GOODBYE
-    PrintGoodbye();
+    print_goodbye();
 #endif
+    return 0;
 }

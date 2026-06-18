@@ -16,4 +16,10 @@
 
 #include "../VortexEngine/VortexEngine.h"
 
-void VE_EXPORT PrintGoodbye();
+#ifdef VORTEX_GOODBYE_LK_DYNAMIC
+    #define VORTEX_GOODBYE_EXPORT VE_DLL_EXPORT
+#else
+    #define VORTEX_GOODBYE_EXPORT
+#endif
+
+void VORTEX_GOODBYE_EXPORT print_goodbye();
