@@ -14,7 +14,7 @@
 
 include_directories(.)
 remove_definitions(-DVE_COMPILE_VORTEX)
-add_executable(Sandbox Main.cpp)
+add_executable(Sandbox main.cpp)
 add_definitions(${VORTEX_MODULES_DEFINITIONS})
 message("Message: ${VORTEX_MODULES_DEFINITIONS}")
 target_link_libraries(Sandbox ${PROJECT_NAME})

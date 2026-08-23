@@ -17,7 +17,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 set(VORTEX_MODULES "")
 set(VORTEX_MODULES_STATIC "")
 set(VORTEX_MODULES_DYNAMIC "")
-set(VORTEX_MODULES_DEFINITIONS "-Dc")
+set(VORTEX_MODULES_DEFINITIONS "")
 
 # Macro stating that we are compiling Vortex
 add_compile_definitions(VE_COMPILE_VORTEX)
