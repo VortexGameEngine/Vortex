@@ -1,0 +1,24 @@
+name: Task
+description: Create a new task
+title: "[Task]: "
+type: Task
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Describe the task in detail.
+    validations:
+      required: true
+
+  - type: textarea
+    id: requirements
+    attributes:
+      label: Requirements
+      description: Provide a list of requirements.
+      value: |
+        - 
+        - 
+        -
+    validations:
+      required: true

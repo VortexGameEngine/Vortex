@@ -1,0 +1,54 @@
+name: Bug Report
+description: File a bug report for Vortex Engine
+title: "[Bug]: "
+type: Bug
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Describe the bug you encountered.
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to Reproduce
+      description: Provide a numbered list of steps to reproduce the issue.
+      value: |
+        1. 
+        2. 
+        3.
+    validations:
+      required: true
+
+  - type: textarea
+    id: cause
+    attributes:
+      label: Cause (If you know)
+      description: Describe the cause of this bug if you already know it.
+    validations:
+      required: false
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots
+      description: Drag and drop or paste your screenshots here.
+    validations:
+      required: false
+
+  - type: dropdown
+    id: tool
+    attributes:
+      label: Tool where the bug occurs
+      description: Select the part of the engine where this is happening.
+      options:
+        - vbuild
+        - Vortex Engine Source Project
+        - Vortex Engine Editor
+        - Vortex Engine Player
+        - Vortex Engine Editor and Player
+    validations:
+      required: true
