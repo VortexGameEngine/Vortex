@@ -1,0 +1,13 @@
+#!/bin/sh
+# Rewrap prose in staged Markdown to 120 columns, then re-stage it.
+# Enable once per clone:  git config core.hooksPath .githooks
+set -eu
+
+script="$(git rev-parse --show-toplevel)/.githooks/scripts/mdwrap.py"
+[ -f "$script" ] || exit 0
+
+if command -v python3 >/dev/null 2>&1; then
+    python3 "$script" --staged --width 120
+else
+    echo "pre-commit: python3 not found; skipping Markdown rewrap" >&2
+fi

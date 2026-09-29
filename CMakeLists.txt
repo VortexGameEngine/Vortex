@@ -26,6 +26,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(VORTEX_ENGINE_DYNAMIC_LINK ON)
 
+include(cmake/GitHooks.cmake)
 include(ThirdParty/yaml-cpp.cmake)
 
 # Set after FetchContent so third-party targets defined above don't inherit it
@@ -47,7 +48,7 @@ include_directories(VortexEngine)
 include_directories(ThirdParty)
 
 # Add vbuild project
-add_subdirectory(tools/vbuild)
+add_subdirectory(Tools/vbuild)
 
 ###########################################
 # Add Vortex modules here
