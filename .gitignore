@@ -33,3 +33,6 @@
 
 .idea/
 cmake-build-*/
+
+# Mac OS
+.DS_Store
