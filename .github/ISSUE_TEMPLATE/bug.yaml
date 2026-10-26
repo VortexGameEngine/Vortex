@@ -1,6 +1,6 @@
 name: Bug Report
 description: File a bug report for Vortex Engine
-title: "[Bug]: "
+title: ""
 type: Bug
 body:
   - type: textarea
