@@ -2,12 +2,14 @@
 
 ## Overview
 
-`vbuild` is the official build orchestration agent for the **VortexEngine** ecosystem.  
-It acts as the central coordinator between project manifests (`vortex.yaml`), module manifests (`vortex_module.yaml`), 
-the dependency resolver, and the underlying build system (CMake).
+`vbuild` is the transpiling build orchestrator of the **VortexEngine** ecosystem. It coordinates project manifests
+(`vortex.yaml`), module manifests (`vortex_module.yaml`), the dependency resolver, the transpiler and the underlying
+build system (CMake).
 
-`vbuild` is **not** a compiler or build system by itself. It **extends** CMake by generating project structure and 
-definitions based on declarative YAML manifests.
+`vbuild` is a source-to-source compiler plus a build driver; it replaces neither the C++ compiler nor CMake. It resolves
+the module graph from declarative YAML manifests, copies the project sources into `.vbuild/`, transpiles the Vortex
+dialect (`VGAMEOBJECT`, `REACT`, `.cppx`) there into plain C++, generates the CMake and configuration artifacts, and
+drives CMake over the result.
 
 ---
 
@@ -19,6 +21,7 @@ definitions based on declarative YAML manifests.
     - Capabilities
     - Version ranges and constraints
     - Conflicts and exclusivity rules
+- Copy the project sources into `.vbuild/` and transpile the Vortex dialect there into plain C++
 - Generate deterministic build metadata:
     - `.vbuild/VortexModules.cmake`
     - `.vbuild/VortexConfig.h`
@@ -35,7 +38,7 @@ The typical `vbuild` lifecycle follows four steps:
 
 1. **Initialize** — Create a new project and manifest  
 2. **Configure** — Resolve modules, capabilities, and constraints  
-3. **Generate** — Write build files and C/C++ macros*
+3. **Generate** — Copy and transpile sources into `.vbuild/`, write build files and C/C++ macros*
 4. **Build** — Invoke CMake and the native build system
 
 *Some macros are generated through CMake, others are are written by `vbuild` in the VortexConfig.h header.
@@ -59,7 +62,7 @@ The typical `vbuild` lifecycle follows four steps:
 
 ## Generated Artifacts
 
-`vbuild` writes the following files into the `.vbuild/` directory:
+`vbuild` writes the transpiled sources and the following files into `.vbuild/`; `vortex.lock` goes to the project root:
 
 | File                  | Purpose                                                                                      |
 |-----------------------|----------------------------------------------------------------------------------------------|
@@ -67,7 +70,8 @@ The typical `vbuild` lifecycle follows four steps:
 | `VortexConfig.h`      | Auto-generated C/C++ header exposing compile-time macros for enabled modules and features    |
 | `vortex.lock`         | Lockfile containing resolved module versions for reproducible builds                         |
 
-All generated files **must be ignored by version control** and **should not be edited manually**.
+Everything under `.vbuild/` **must be ignored by version control**; `vortex.lock` is tracked. None of it is edited by
+hand.
 
 ---
 
@@ -160,7 +164,7 @@ The rest of the build system remains standard CMake.
 ## Design Principles
 
 - **Declarative by design**: YAML manifests are the single source of truth.  
-- **Separation of concerns**: `vbuild` handles resolution and generation; CMake handles compilation.  
+- **Separation of concerns**: `vbuild` handles resolution, transpilation and generation; CMake handles compilation.  
 - **Composable**: modules declare capabilities and dependencies without tight coupling.  
 - **Reproducible**: lockfile ensures deterministic builds.  
 - **Non-invasive**: existing CMake projects require no fundamental rewrites.
