@@ -6,9 +6,9 @@
 
 
 // 1. The Core Engine Macros
-#define VEObject(ClassName) \
+#define VE_OBJECT(ClassName) \
 class ClassName; /* Dummy tag for the template */ \
-struct ClassName##_Schema
+struct ClassName##Fields
 
 template <typename T>
 class VReference;
@@ -16,12 +16,12 @@ class VReference;
 template <typename T>
 VReference<T> CreateVEObject() {
     // Calls the generated allocation function
-    uint32_t newIndex = VReference<T>::AllocateInSoA();
-    return VReference<T>(newIndex);
+    uint32_t new_index = VReference<T>::AllocateInSoA();
+    return VReference<T>(new_index);
 }
 
 // 2. What the Developer Writes
-VEObject(Player)
+VE_OBJECT(Player)
 {
     int position;
     int health;
@@ -34,18 +34,18 @@ VEObject(Player)
 class PlayerSchema
 {
 private:
-    int _id;
-    int _position;
-    int _health;
+    int id_;
+    int position_;
+    int health_;
 
 public:
-    PlayerSchema(uint32_t id) : _id(id), _position(0), _health(0) {};
+    PlayerSchema(uint32_t id) : id_(id), position_(0), health_(0) {};
 
-    int& position() { return _position; }
+    int& Position() { return position_; }
     // The player's health
-    int& health()   { return _health; }
+    int& Health()   { return health_; }
 
-    uint32_t GetID() const { return _id; }
+    uint32_t GetID() const { return id_; }
 };
 
 struct PlayerSoA {
@@ -55,30 +55,30 @@ struct PlayerSoA {
 };
 
 // Global storage instance
-PlayerSoA g_PlayerStorage;
+PlayerSoA g_player_storage;
 
 template <>
 class VReference<Player> {
 private:
-    uint32_t index;
+    uint32_t index_;
 
 public:
-    VReference(uint32_t i) : index(i) {}
+    VReference(uint32_t i) : index_(i) {}
 
     // FIX 1: Provide the Allocate function that CreateVEObject expects
     static uint32_t AllocateInSoA() {
-        uint32_t newIndex = g_PlayerStorage.position.size();
-        g_PlayerStorage.position.push_back(0); // Default init
-        g_PlayerStorage.health.push_back(0);   // Default init
-        return newIndex;
+        uint32_t new_index = g_player_storage.position.size();
+        g_player_storage.position.push_back(0); // Default init
+        g_player_storage.health.push_back(0);   // Default init
+        return new_index;
     }
 
     // FIX 2: Replace operator-> with direct reference-returning methods
-    int& position() { return g_PlayerStorage.position[index]; }
+    int& Position() { return g_player_storage.position[index_]; }
     // The player's health
-    int& health()   { return g_PlayerStorage.health[index]; }
+    int& Health()   { return g_player_storage.health[index_]; }
 
-    uint32_t GetID() const { return index; }
+    uint32_t GetID() const { return index_; }
 };
 
 // ---------------------------------------------------------
@@ -91,11 +91,11 @@ void MassCreateSoA()
     for (int i = 1; i < OBJECTS_TO_GENERATE; i++)
     {
         VReference<Player> p = CreateVEObject<Player>();
-        p.health() = i;
+        p.Health() = i;
         output.append("Created game object with id ");
         output.append(std::to_string(p.GetID()));
         output.append(" with health ");
-        output.append(std::to_string(p.health()));
+        output.append(std::to_string(p.Health()));
         output.append("\n");
     }
 
@@ -110,11 +110,11 @@ void MassCreateObjects()
     {
         PlayerSchema *pptr = new PlayerSchema(i);
         PlayerSchema p = *pptr;
-        p.health() = i;
+        p.Health() = i;
         output.append("Created game object with id ");
         output.append(std::to_string(p.GetID()));
         output.append(" with health ");
-        output.append(std::to_string(p.health()));
+        output.append(std::to_string(p.Health()));
         output.append("\n");
     }
 
@@ -122,23 +122,23 @@ void MassCreateObjects()
 }
 
 auto main(int argc, char *argv[]) -> int {
-    using clock = std::chrono::steady_clock;
+    using Clock = std::chrono::steady_clock;
 
-    const auto soaStart = clock::now();
+    const auto soa_start = Clock::now();
     MassCreateSoA();
-    const auto soaEnd = clock::now();
+    const auto soa_end = Clock::now();
 
-    const auto objStart = clock::now();
+    const auto obj_start = Clock::now();
     MassCreateObjects();
-    const auto objEnd = clock::now();
+    const auto obj_end = Clock::now();
 
-    const auto soaMs =
-        std::chrono::duration<double, std::milli>(soaEnd - soaStart).count();
-    const auto objMs =
-        std::chrono::duration<double, std::milli>(objEnd - objStart).count();
+    const auto soa_ms =
+        std::chrono::duration<double, std::milli>(soa_end - soa_start).count();
+    const auto obj_ms =
+        std::chrono::duration<double, std::milli>(obj_end - obj_start).count();
 
-    std::cerr << "MassCreateSoA():     " << soaMs << " ms\n";
-    std::cerr << "MassCreateObjects(): " << objMs << " ms\n";
+    std::cerr << "MassCreateSoA():     " << soa_ms << " ms\n";
+    std::cerr << "MassCreateObjects(): " << obj_ms << " ms\n";
 
     return 0;
 }

@@ -16,6 +16,6 @@
 
 #include <iostream>
 
-void print_goodbye() {
+void PrintGoodbye() {
     std::cout << "Goodbye!\n";
 }

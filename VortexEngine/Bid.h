@@ -15,4 +15,4 @@
 #pragma once
 #include "src/CommonMacros.h"
 
-VE_EXPORT void do_something();
+VE_EXPORT void DoSomething();

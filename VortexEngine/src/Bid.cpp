@@ -15,7 +15,7 @@
 #include <iostream>
 #include "Bid.h"
 
-VE_EXPORT void do_something() {
+VE_EXPORT void DoSomething() {
     int a = 2 + 2;
     std::cout << "Did something: a = " << a << '\n';
     std::cout << sizeof(int) << '\n';

@@ -22,4 +22,4 @@
     #define VORTEX_GOODBYE_EXPORT
 #endif
 
-void VORTEX_GOODBYE_EXPORT print_goodbye();
+void VORTEX_GOODBYE_EXPORT PrintGoodbye();
