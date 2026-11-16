@@ -23,7 +23,7 @@ Everything else follows from three commitments:
 |---|---|
 | **Compile-time composition** | Modules, entities and UI are assembled at build time by `vbuild`, not wired up at runtime. |
 | **GPU-driven rendering** | The CPU produces flat command/indirect buffers; the GPU decides what to draw. |
-| **Zero-cost abstractions** | Any ergonomic API (OOP proxies, `.cppx` UI, scripting) must compile down to raw contiguous-buffer operations with no runtime overhead. |
+| **Zero-cost abstractions** | Any ergonomic API (OOP proxies, `.cppx` UI) must compile down to raw contiguous-buffer operations with no runtime overhead. |
 
 **Expose both OOP and DOD; implement DOD internally.** Game developers get two public APIs over the same engine: a DOD
 API (systems over SoA buffers) and an OOP API. OOP game code may stay actual OOP, or be annotated with `VGAMEOBJECT()`
@@ -56,15 +56,15 @@ imposes it — each such place carries a `// RATIONALE:` (§2.1).
 6. **Never hand-edit generated artifacts** (`vortex.lock`, `VortexModules.cmake`, `VortexConfig.h`, generated proxy
    structs, transpiled `.cppx` output). Change the source manifest/macro and rerun `vbuild`.
 7. **Code explains itself; comments are a last resort.** Readable names and small, well-named functions over prose.
-   Public interfaces get a short doc comment; nothing else does unless the code cannot be made clearer (see §12).
+   Public interfaces get a short doc comment; nothing else does unless the code cannot be made clearer (see §11).
 
 ---
 
 ## 3. Repository layout
 
 Target layout. Today the tree holds `VortexEngine/` (core), `VortexHelloWorld/` and `VortexGoodbye/` (sample modules
-registered by hand in `CMakeLists.txt`), `Sandbox/`, `Tools/vbuild/` (CLI skeleton), `cmake/` and `ThirdParty/`; confirm
-against the tree before relying on a path.
+registered by hand in `CMakeLists.txt`), `Sandbox/`, `Tools/vbuild/` (CLI skeleton), `cmake/`, `docs/adr/` and
+`ThirdParty/`; confirm against the tree before relying on a path.
 
 ```
 /engine/          Core: DOD primitives (buffers, allocators, queues, phase barriers),
@@ -73,10 +73,9 @@ against the tree before relying on a path.
 /Tools/vbuild/    Build orchestration + transpiler — has its own AGENTS.md
 /tools/lsp/       LSP sidecar / Volar-based proxy for .cppx
 /ui/              .cppx UI runtime: UICommandBuffer, style resolution
-/scripting/       Wasm host, buffer marshalling, TypeScript toolchain
 /features/        Feature Toggle (FT) client, local FT file, server resolution
 /cmake/           Hand-written CMake (generated files live in .vbuild/)
-/docs/            Design docs and ADRs — check here before proposing new patterns
+/docs/adr/        Architecture Decision Records — read before proposing new patterns
 /.vbuild/         vbuild output: copied + transpiled sources, VortexModules.cmake, VortexConfig.h (ignored)
 ```
 
@@ -131,13 +130,13 @@ struct PositionBuffer {
 - Prefer fixed-capacity, arena- or chunk-allocated buffers over `std::vector` growth in the frame loop.
 - Use handles/indices (`uint32_t`) instead of pointers for cross-buffer references.
 - Keep POD types trivially copyable; `static_assert(std::is_trivially_copyable_v<T>)` on any type that goes into a
-  buffer, queue, or the Wasm boundary.
+  buffer or queue.
 
 ### Modules as stateless processors
 ```cpp
 /// Pure transform; `out.count` must equal `in.count`. `dt` is the fixed timestep.
 struct GravityModule {
-    static void process(const VelocityBuffer& in, VelocityBuffer& out, float dt);
+    static void Process(const VelocityBuffer& in, VelocityBuffer& out, float dt);
 };
 ```
 
@@ -177,7 +176,7 @@ VGAMEOBJECT(Player,
     (Vec3,   position)
 );
 
-void apply_damage(PlayerProxy p, float amount) {
+void ApplyDamage(PlayerProxy p, float amount) {
     p.health() -= amount;   // -> chunk.health[p.slot] -= amount;
 }
 ```
@@ -196,7 +195,7 @@ UI is written declaratively inside C++ using the `REACT(<HTML>)` macro.
 
 ```cpp
 /// Builds the HUD for one player. Zero allocation.
-auto render_hud(const HudState& s) {
+auto RenderHud(const HudState& s) {
     return REACT(
         <div class="hud">
             <span class="hp">{s.health}</span>
@@ -272,23 +271,7 @@ unrelated data into cache mid-loop, makes ordering depend on scheduling, and can
 
 ---
 
-## 10. Scripting boundary (TypeScript → Wasm)
-
-- **Do not use C++ transpilers** such as `compilets`. They depend on garbage collection (`cppgc`) and `std::shared_ptr`,
-  which break determinism and cache locality.
-- TypeScript is compiled to **WebAssembly** and treated as an **isolated, stateless processor**, exactly like a native
-  module.
-- The host passes **contiguous memory buffers** into the sandbox and reads output buffers back. Scripts never hold
-  references into engine memory, and the engine never calls back into scripts mid-transform. This preserves lock-free
-  execution.
-
-Rules for agents:
-- Marshal only trivially-copyable POD across the boundary; version the layout.
-- No host imports that perform I/O or allocation on behalf of the script inside the frame loop.
-
----
-
-## 11. Feature Toggles (FTs)
+## 10. Feature Toggles (FTs)
 
 Feature toggles are resolved in a strict override chain (later wins):
 
@@ -305,7 +288,7 @@ Rules:
 
 ---
 
-## 12. Documentation standard
+## 11. Documentation standard
 
 The goal is code that needs no explanation. In priority order:
 
@@ -320,14 +303,14 @@ The goal is code that needs no explanation. In priority order:
    you change behaviour, update or delete the comment in the same change.
 5. **Docs describe the repository, nothing else.** Comments, doc blocks and `/docs/` describe the code as it currently
    exists. They must never reference design conversations, chat history, prompts, alternatives that were discussed, or
-   how a decision was reached. Alternatives that matter go in an ADR under `/docs/`, written as a standalone record —
-   not as a transcript.
+   how a decision was reached. Alternatives that matter go in an ADR under `/docs/adr/`, written as a standalone record
+   — not as a transcript.
 6. **Markdown wraps at 120 columns**, the same limit `.clang-format` applies to C++. `.githooks/scripts/mdwrap.py`
    rewraps prose and list items; headings, tables, code blocks and hard line breaks are left exactly as written.
 
 ---
 
-## 13. Contribution workflow
+## 12. Contribution workflow
 
 Vortex Engine is **open source**. Work is tracked as GitHub **Issues** and lands through **Pull Requests**; contributors
 and users may suggest or implement features.
@@ -344,7 +327,7 @@ fork of the engine: the module system exists so that competing implementations c
 - **Keep PRs small and reviewable.** Prefer several focused PRs over one large one. A PR that mixes a refactor with a
   behaviour change will be sent back.
 - **PR description = what and why, in the repository's terms.** State the change, the Issue it closes, and the
-  verification you ran (§14). The same rule as §12 applies: no references to conversations, prompts or discussion
+  verification you ran (§13). The same rule as §11 applies: no references to conversations, prompts or discussion
   history.
 - **Never push to protected branches.** Everything, including maintainer work and generated-artifact updates, goes
   through review.
@@ -352,12 +335,12 @@ fork of the engine: the module system exists so that competing implementations c
 - **Repository hooks install themselves** the first time you configure CMake, controlled by `VORTEX_INSTALL_GIT_HOOKS`
   (default ON); an existing `core.hooksPath` is never overwritten. If you never configure a build, run
   `cmake -P cmake/GitHooks.cmake` once instead. The pre-commit hook rewraps the staged copy of each Markdown file to 120
-  columns (§12) and re-stages it. The working copy is updated to match only when it has no unstaged edits; otherwise it
+  columns (§11) and re-stages it. The working copy is updated to match only when it has no unstaged edits; otherwise it
   is left alone and reported.
 
 ---
 
-## 14. Testing and verification
+## 13. Testing and verification
 
 Before considering a change done:
 
@@ -371,13 +354,13 @@ Before considering a change done:
 - `.cppx` changes: shadow-document positions and `#line` mapping verified.
 - New toggles, modules, entities, or capabilities are reflected in the YAML manifest and the lockfile diff is
   intentional.
-- Public interfaces documented per §12; no comment references anything outside the repository.
+- Public interfaces documented per §11; no comment references anything outside the repository.
 
 Exact test targets are defined by `vbuild`; see `/Tools/vbuild/AGENTS.md`.
 
 ---
 
-## 15. Quick "do / don't"
+## 14. Quick "do / don't"
 
 | Do | Don't |
 |---|---|
@@ -387,7 +370,6 @@ Exact test targets are defined by `vbuild`; see `/Tools/vbuild/AGENTS.md`.
 | Keep third-party OOP at the boundary, convert to buffers at the edge | Let library object graphs leak into hot loops |
 | Change YAML manifests and rerun `vbuild` | Edit generated CMake/headers/lockfile by hand |
 | Keep `REACT()` blocks allocation-free | Introduce retained UI trees or VDOM diffing |
-| Marshal POD buffers into Wasm | Share engine memory or callbacks with scripts |
 | Resolve FTs at a defined point | Query toggles inside a transform |
 | Rename/extract until the code is clear | Explain unclear code with a paragraph |
 | Scope each PR to one Issue | Implement a suggestion before its Issue is accepted |
