@@ -16,8 +16,7 @@ approving every change.
 - **Handle one ticket per turn.** Finish the feedback on one ticket and wait for the user before starting the next.
 - **Open one editable form per ticket.** Every draft for that ticket appears prefilled in a text box the user can edit
   and send back.
-- **Write issue text in the repository's terms.** No references to conversations, prompts or discussion history
-  (AGENTS.md §11 and §12).
+- **Write issue text in the repository's terms.** No references to conversations, prompts or discussion history.
 
 ## Workflow
 
@@ -25,7 +24,7 @@ approving every change.
 
 - Read every template in `.github/ISSUE_TEMPLATE/`; the section headings an issue must have come from each template's
   `label` fields (for a Task: `### Description` and `### Requirements`).
-- Read `AGENTS.md`, `docs/adr/` and any code the issues touch, so feedback reflects what exists and what was decided.
+- Read `README.md`, `AGENTS.md` and any code the issues touch, so feedback reflects what exists and what was decided.
 - List the open issues and read each one:
 
   ```bash
@@ -44,14 +43,15 @@ approving every change.
 For the ticket in hand, report:
 
 - **What is missing** compared with its template.
-- **What is wrong or outdated** compared with `AGENTS.md`, `docs/adr/` or the code, quoting the file.
+- **What is wrong or outdated** compared with `README.md`, `AGENTS.md` or the code, quoting the file.
 - **What already exists in the code**, so requirements cover only the remaining work.
 - **Whether to split it**, by the rules below.
 - **Questions only the user can answer**, such as scope or intent.
 
 #### When to split
 
-**Split a ticket when it cannot land as one good PR**, since one issue lands as one PR (AGENTS.md §12). A good PR:
+**Split a ticket when it cannot land as one good PR**, since one issue lands as one PR (`README.md`, Contributing). A
+good PR:
 
 1. **Is one kind of change:** a new feature, a behaviour change, a refactor, or a build or tooling change, never a mix.
 2. **Is reviewable in one sitting:** about 400 changed lines at most, not counting tests and generated files.
